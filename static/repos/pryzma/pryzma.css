@@ -41,3 +41,21 @@
     background-color: transparent;
     padding: 0;
 }
+
+/* File browser layout */
+#file-browser {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+#file-list { width: 35%; max-height: 60vh; overflow: auto; }
+#file-viewer { width: 65%; max-height: 60vh; overflow: auto; }
+
+.file-list-ul { list-style: none; padding: 8px 12px; margin: 8px 0; }
+.file-item { margin: 6px 0; }
+.file-btn { background: transparent; border: none; color: #9bf; text-align: left; padding: 6px; cursor: pointer; width:100%; }
+.file-btn:hover { background: rgba(255,255,255,0.02); }
+
+.breadcrumb { font-size: 13px; color: #ccc; padding: 6px 0; }

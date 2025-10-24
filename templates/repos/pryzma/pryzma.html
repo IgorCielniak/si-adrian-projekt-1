@@ -32,6 +32,12 @@
                 <div id="language-stats">Loading language data...</div>
                 <div id="last-update">Last updated: Loading...</div>
             </div>
+
+            <div id="file-browser">
+                <div id="file-list" class="markdown-body">Loading files...</div>
+                <div id="file-viewer" class="markdown-body">Select a file to view</div>
+            </div>
+
             <div id="readme-content" class="markdown-body">
                 Loading README...
             </div>
@@ -39,12 +45,19 @@
     </main>
 
     <script>
+        // Minimal marked configuration
         marked.setOptions({ breaks: true, gfm: true });
-        
+
+        // Helpers
+        function escapeHtml(s) {
+            return s.replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        // Fetch and render repository metadata, README and file list
         async function fetchRepoData() {
             try {
                 const repoData = await (await fetch('https://api.github.com/repos/IgorCielniak/Pryzma')).json();
-                
+
                 // Update repository info
                 document.getElementById('repo-title').textContent = repoData.name;
                 document.getElementById('repo-description').textContent = repoData.description;
@@ -57,16 +70,79 @@
                 const languages = Object.keys(await (await fetch(repoData.languages_url)).json()).join(', ');
                 document.getElementById('language-stats').textContent = `Languages: ${languages}`;
 
-                // Update README
+                // README
                 const readmeData = await (await fetch('https://api.github.com/repos/IgorCielniak/Pryzma/readme')).json();
-                const readme = atob(readmeData.content).replace(/[^\x20-\x7E\n]/g, '');
-                document.getElementById('readme-content').innerHTML = marked.parse(readme);
-            } catch (error) {
-                console.error('Error:', error);
+                const readmeRaw = atob(readmeData.content);
+                const cleanedReadme = readmeRaw.replace(/[^\x20-\x7E\n]/g, '');
+                document.getElementById('readme-content').innerHTML = marked.parse(cleanedReadme);
+
+                // File browser - start at repo root
+                fetchContents('');
+            } catch (err) {
+                console.error(err);
                 document.getElementById('repo-content').innerHTML = 'Error loading repository data.';
             }
         }
 
+        // File browser functions
+        async function fetchContents(path) {
+            const listEl = document.getElementById('file-list');
+            listEl.innerHTML = 'Loading...';
+            try {
+                const apiUrl = `https://api.github.com/repos/IgorCielniak/Pryzma/contents/${path}`.replace(/\/+$/,'');
+                const res = await fetch(apiUrl);
+                const items = await res.json();
+                if (!Array.isArray(items)) { listEl.textContent = 'No files.'; return; }
+
+                // Breadcrumb
+                const bc = document.createElement('div'); bc.className = 'breadcrumb';
+                bc.textContent = path ? path : '/';
+                listEl.innerHTML = '';
+                listEl.appendChild(bc);
+
+                const ul = document.createElement('ul'); ul.className = 'file-list-ul';
+                items.sort((a,b)=> (a.type===b.type? a.name.localeCompare(b.name) : (a.type==='dir'? -1:1)));
+                for (const it of items) {
+                    const li = document.createElement('li'); li.className='file-item';
+                    const btn = document.createElement('button'); btn.className='file-btn';
+                    btn.textContent = it.name + (it.type==='dir'? '/':'');
+                    btn.onclick = ()=> it.type==='dir' ? fetchContents(it.path) : viewFile(it.path, it.name);
+                    li.appendChild(btn);
+                    ul.appendChild(li);
+                }
+                listEl.appendChild(ul);
+            } catch (e) {
+                console.error(e);
+                listEl.textContent = 'Error loading files.';
+            }
+        }
+
+        async function viewFile(path, name) {
+            const viewer = document.getElementById('file-viewer');
+            viewer.innerHTML = 'Loading...';
+            try {
+                const data = await (await fetch(`https://api.github.com/repos/IgorCielniak/Pryzma/contents/${path}`)).json();
+                if (data.content) {
+                    const raw = atob(data.content.replace(/\n/g,''));
+                    const cleaned = raw.replace(/[^\x20-\x7E\n]/g,'');
+                    if (name.toLowerCase().endsWith('.md')) {
+                        viewer.innerHTML = marked.parse(cleaned);
+                    } else if (name.match(/\.(png|jpg|jpeg|gif|svg)$/i)) {
+                        // show image via data URL
+                        viewer.innerHTML = `<img src="data:;base64,${data.content}" style="max-width:100%;">`;
+                    } else {
+                        viewer.innerHTML = '<pre><code>' + escapeHtml(cleaned) + '</code></pre>';
+                    }
+                } else {
+                    viewer.textContent = 'Unable to load file.';
+                }
+            } catch (e) {
+                console.error(e);
+                viewer.textContent = 'Error loading file.';
+            }
+        }
+
+        // Start
         fetchRepoData();
     </script>
 </body>
