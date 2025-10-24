@@ -94,9 +94,31 @@
                 const items = await res.json();
                 if (!Array.isArray(items)) { listEl.textContent = 'No files.'; return; }
 
-                // Breadcrumb
+                // Breadcrumb (clickable)
                 const bc = document.createElement('div'); bc.className = 'breadcrumb';
-                bc.textContent = path ? path : '/';
+                // root link
+                const rootBtn = document.createElement('button'); rootBtn.className='file-btn'; rootBtn.textContent = '/'; rootBtn.onclick = ()=> fetchContents('');
+                bc.appendChild(rootBtn);
+
+                if (path) {
+                    const parts = path.split('/').filter(Boolean);
+                    let cum = '';
+                    for (let i=0;i<parts.length;i++){
+                        cum = cum ? cum + '/' + parts[i] : parts[i];
+                        const seg = document.createElement('button'); seg.className='file-btn'; seg.textContent = parts[i];
+                        seg.onclick = (()=>{ const p = cum; return ()=> fetchContents(p); })();
+                        bc.appendChild(seg);
+                    }
+                    // up button
+                    const upBtn = document.createElement('button'); upBtn.className='file-btn'; upBtn.textContent='..';
+                    upBtn.onclick = ()=> {
+                        const parent = parts.slice(0,-1).join('/');
+                        fetchContents(parent);
+                    };
+                    // place up button at left
+                    bc.insertBefore(upBtn, bc.firstChild);
+                }
+
                 listEl.innerHTML = '';
                 listEl.appendChild(bc);
 
