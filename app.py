@@ -8,7 +8,7 @@ def index():
 
 @app.route('/repos/pryzma')
 def pryzma_repo():
-    return render_template('repos/pryzma.html')
+    return render_template('repos/pryzma/pryzma.html')
 
 
 if __name__ == '__main__':

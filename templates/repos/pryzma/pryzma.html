@@ -5,53 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pryzma Repository</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='repos/pryzma/pryzma.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <style>
-        .markdown-body {
-            box-sizing: border-box;
-            min-width: 200px;
-            max-width: 980px;
-            margin: 0 auto;
-            padding: 45px;
-            background-color: #212121ff;
-            border-radius: 15px;
-        }
-
-        .markdown-body img {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .markdown-body table {
-            border-spacing: 0;
-            border-collapse: collapse;
-            margin: 1em 0;
-        }
-
-        .markdown-body td, .markdown-body th {
-            padding: 6px 13px;
-            border: 1px solid #30363d;
-        }
-
-        .markdown-body pre {
-            background-color: #161b22 !important;
-            border-radius: 6px;
-            padding: 16px;
-            overflow: auto;
-        }
-
-        .markdown-body code {
-            background-color: rgba(110,118,129,0.4);
-            border-radius: 6px;
-            padding: 0.2em 0.4em;
-        }
-
-        .markdown-body pre code {
-            background-color: transparent;
-            padding: 0;
-        }
-    </style>
 </head>
 <body>
     <nav id="top-nav">
@@ -84,7 +40,7 @@
 
     <script>
         marked.setOptions({ breaks: true, gfm: true });
-
+        
         async function fetchRepoData() {
             try {
                 const repoData = await (await fetch('https://api.github.com/repos/IgorCielniak/Pryzma')).json();
@@ -105,12 +61,12 @@
                 const readmeData = await (await fetch('https://api.github.com/repos/IgorCielniak/Pryzma/readme')).json();
                 const readme = atob(readmeData.content).replace(/[^\x20-\x7E\n]/g, '');
                 document.getElementById('readme-content').innerHTML = marked.parse(readme);
-
             } catch (error) {
                 console.error('Error:', error);
                 document.getElementById('repo-content').innerHTML = 'Error loading repository data.';
             }
         }
+
         fetchRepoData();
     </script>
 </body>
