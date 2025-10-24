@@ -1,61 +1,89 @@
 .markdown-body {
-    box-sizing: border-box;
-    min-width: 200px;
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 45px;
-    background-color: #212121ff;
-    border-radius: 15px;
+  box-sizing: border-box;
+  min-width: 200px;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 45px;
+  background-color: #212121ff;
+  border-radius: 15px;
 }
 
 .markdown-body img {
-    max-width: 100%;
-    height: auto;
+  max-width: 100%;
+  height: auto;
 }
 
 .markdown-body table {
-    border-spacing: 0;
-    border-collapse: collapse;
-    margin: 1em 0;
+  border-spacing: 0;
+  border-collapse: collapse;
+  margin: 1em 0;
 }
 
-.markdown-body td, .markdown-body th {
-    padding: 6px 13px;
-    border: 1px solid #30363d;
+.markdown-body td,
+.markdown-body th {
+  padding: 6px 13px;
+  border: 1px solid #30363d;
 }
 
 .markdown-body pre {
-    background-color: #161b22 !important;
-    border-radius: 6px;
-    padding: 16px;
-    overflow: auto;
+  background-color: #161b22 !important;
+  border-radius: 6px;
+  padding: 16px;
+  overflow: auto;
 }
 
 .markdown-body code {
-    background-color: rgba(110,118,129,0.4);
-    border-radius: 6px;
-    padding: 0.2em 0.4em;
+  background-color: rgba(110, 118, 129, 0.4);
+  border-radius: 6px;
+  padding: 0.2em 0.4em;
 }
 
 .markdown-body pre code {
-    background-color: transparent;
-    padding: 0;
+  background-color: transparent;
+  padding: 0;
 }
 
-/* File browser layout */
 #file-browser {
-    display: flex;
-    gap: 20px;
-    align-items: flex-start;
-    margin-top: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  margin-top: 20px;
 }
 
-#file-list { width: 35%; max-height: 60vh; overflow: auto; }
-#file-viewer { width: 65%; max-height: 60vh; overflow: auto; }
+#file-list {
+  width: 35%;
+  max-height: 60vh;
+  overflow: auto;
+}
+#file-viewer {
+  width: 65%;
+  max-height: 60vh;
+  overflow: auto;
+}
 
-.file-list-ul { list-style: none; padding: 8px 12px; margin: 8px 0; }
-.file-item { margin: 6px 0; }
-.file-btn { background: transparent; border: none; color: #9bf; text-align: left; padding: 6px; cursor: pointer; width:100%; }
-.file-btn:hover { background: rgba(255,255,255,0.02); }
+.file-list-ul {
+  list-style: none;
+  padding: 8px 12px;
+  margin: 8px 0;
+}
+.file-item {
+  margin: 6px 0;
+}
+.file-btn {
+  background: transparent;
+  border: none;
+  color: #9bf;
+  text-align: left;
+  padding: 6px;
+  cursor: pointer;
+  width: 100%;
+}
+.file-btn:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
 
-.breadcrumb { font-size: 13px; color: #ccc; padding: 6px 0; }
+.breadcrumb {
+  font-size: 13px;
+  color: #ccc;
+  padding: 6px 0;
+}
