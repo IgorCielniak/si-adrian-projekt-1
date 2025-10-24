@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pryzma Repository</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .markdown-body {
+            box-sizing: border-box;
+            min-width: 200px;
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 45px;
+            background-color: #212121ff;
+            border-radius: 15px;
+        }
+
+        .markdown-body img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .markdown-body table {
+            border-spacing: 0;
+            border-collapse: collapse;
+            margin: 1em 0;
+        }
+
+        .markdown-body td, .markdown-body th {
+            padding: 6px 13px;
+            border: 1px solid #30363d;
+        }
+
+        .markdown-body pre {
+            background-color: #161b22 !important;
+            border-radius: 6px;
+            padding: 16px;
+            overflow: auto;
+        }
+
+        .markdown-body code {
+            background-color: rgba(110,118,129,0.4);
+            border-radius: 6px;
+            padding: 0.2em 0.4em;
+        }
+
+        .markdown-body pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav id="top-nav">
+        <div id="nav-left">
+            <img id="logo" src="{{ url_for('static', filename='logo8k.png') }}" alt="logo" />
+            <button id="home-button">Home</button>
+        </div>
+        <input type="text" id="search-bar" placeholder="Search or jump to..." />
+    </nav>
+    <main>
+        <div id="repo-content">
+            <div id="repo-header">
+                <h1 id="repo-title">Loading...</h1>
+                <p id="repo-description">Loading...</p>
+            </div>
+            <div id="repo-stats">
+                <div id="stars">⭐ <span>0</span></div>
+                <div id="forks">🔱 <span>0</span></div>
+                <div id="watchers">👁️ <span>0</span></div>
+            </div>
+            <div id="repo-info">
+                <div id="language-stats">Loading language data...</div>
+                <div id="last-update">Last updated: Loading...</div>
+            </div>
+            <div id="readme-content" class="markdown-body">
+                Loading README...
+            </div>
+        </div>
+    </main>
+
+    <script>
+        marked.setOptions({ breaks: true, gfm: true });
+
+        async function fetchRepoData() {
+            try {
+                const repoData = await (await fetch('https://api.github.com/repos/IgorCielniak/Pryzma')).json();
+                
+                // Update repository info
+                document.getElementById('repo-title').textContent = repoData.name;
+                document.getElementById('repo-description').textContent = repoData.description;
+                document.querySelector('#stars span').textContent = repoData.stargazers_count;
+                document.querySelector('#forks span').textContent = repoData.forks_count;
+                document.querySelector('#watchers span').textContent = repoData.watchers_count;
+                document.getElementById('last-update').textContent = 'Last updated: ' + new Date(repoData.updated_at).toLocaleDateString();
+
+                // Update languages
+                const languages = Object.keys(await (await fetch(repoData.languages_url)).json()).join(', ');
+                document.getElementById('language-stats').textContent = `Languages: ${languages}`;
+
+                // Update README
+                const readmeData = await (await fetch('https://api.github.com/repos/IgorCielniak/Pryzma/readme')).json();
+                const readme = atob(readmeData.content).replace(/[^\x20-\x7E\n]/g, '');
+                document.getElementById('readme-content').innerHTML = marked.parse(readme);
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('repo-content').innerHTML = 'Error loading repository data.';
+            }
+        }
+        fetchRepoData();
+    </script>
+</body>
+</html>

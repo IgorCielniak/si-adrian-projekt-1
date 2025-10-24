@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Super duper zajebista stronka</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+  </head>
+  <body>
+    <nav id="top-nav">
+      <div id="nav-left">
+        <img
+          id="logo"
+          src="{{ url_for('static', filename='logo8k.png') }}"
+          alt="logo"
+        />
+        <button id="home-button">Home</button>
+      </div>
+      <input type="text" id="search-bar" placeholder="Search or jump to..." />
+    </nav>
+    <main>
+      <div id="profile-overview">
+        <img
+          id="avatar"
+          src="{{ url_for('static', filename='avatar.png') }}"
+          alt="avatar"
+        />
+        <div id="user-info">
+          <h2 id="username">IgorCielniak</h1>
+          <span id="nick">igorson</span>
+          <br>
+          <button id="follow-button">Follow</button>
+          <br>
+          <span id="bio">Hi, I'm Igor Cielniak, a student at TechinSchools!</span>
+          <div id="followers-following">
+            <svg text="muted" aria-hidden="true" viewBox="0 0 16 16" id="people-icon">
+              <path d="M2 5.5a3.5 3.5 0 1 1 5.898 2.549 5.508 5.508 0 0 1 3.034 4.084.75.75 0 1 1-1.482.235 4 4 0 0 0-7.9 0 .75.75 0 0 1-1.482-.236A5.507 5.507 0 0 1 3.102 8.05 3.493 3.493 0 0 1 2 5.5ZM11 4a3.001 3.001 0 0 1 2.22 5.018 5.01 5.01 0 0 1 2.56 3.012.749.749 0 0 1-.885.954.752.752 0 0 1-.549-.514 3.507 3.507 0 0 0-2.522-2.372.75.75 0 0 1-.574-.73v-.352a.75.75 0 0 1 .416-.672A1.5 1.5 0 0 0 11 5.5.75.75 0 0 1 11 4Zm-5.5-.5a2 2 0 1 0-.001 3.999A2 2 0 0 0 5.5 3.5Z"></path>
+            </svg>
+            <span id="followers-count">3 followers · 4 following</span>
+          </div>
+          <div id="additional-info">
+            <div>
+              <svg class="icon" viewBox="0 0 16 16" width="5" height="5" aria-hidden="true"><path d="m12.596 11.596-3.535 3.536a1.5 1.5 0 0 1-2.122 0l-3.535-3.536a6.5 6.5 0 1 1 9.192-9.193 6.5 6.5 0 0 1 0 9.193Zm-1.06-8.132v-.001a5 5 0 1 0-7.072 7.072L8 14.07l3.536-3.534a5 5 0 0 0 0-7.072ZM8 9a2 2 0 1 1-.001-3.999A2 2 0 0 1 8 9Z"></path></svg>
+              <span>Warsaw, Poland</span>
+            </div>
+            <div>
+              <svg class="icon" viewBox="0 0 16 16" width="5" height="5" aria-hidden="true"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.251c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V5.809L8.38 9.397a.75.75 0 0 1-.76 0L1.5 5.809v6.442Zm13-8.181v-.32a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25v.32L8 7.88Z"></path></svg>
+              <span>igorcielniak.contact@gmail.com</span>
+            </div>
+          </div>
+          <hr width="70" class="separator"/>
+        </div>
+      </div>
+      <div id="repo-list">
+        <div class="repo-item">
+          <a href="{{ url_for('pryzma_repo') }}" class="repo-name">Pryzma</a>
+          <p class="repo-description">Description</p>
+          <span class="repo-language">Python</span>
+        </div>
+        <div class="repo-item">
+          <a href="https://github.com/IgorCielniak/IC-Text-Editor" class="repo-name">IC-Text-Editor</a>
+          <p class="repo-description">A simple text editor in python.</p>
+          <span class="repo-language">Python</span>
+        </div>
+        <div class="repo-item">
+          <a href="https://github.com/IgorCielniak/ictfd" class="repo-name">ictfd</a>
+          <p class="repo-description">Script for downloading files via http and https</p>
+          <span class="repo-language">Python</span>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
