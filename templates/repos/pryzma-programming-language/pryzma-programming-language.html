@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pryzma Programming Language Repository</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- reuse the pryzma markdown/file-browser CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='repos/pryzma/pryzma.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-dark.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <nav id="top-nav">
+        <div id="nav-left">
+            <img id="logo" src="{{ url_for('static', filename='logo8k.png') }}" alt="logo" />
+            <button id="home-button">Home</button>
+        </div>
+        <input type="text" id="search-bar" placeholder="Search or jump to..." />
+    </nav>
+    <main>
+        <div id="repo-content">
+            <div id="repo-header">
+                <h1 id="repo-title">Loading...</h1>
+                <p id="repo-description">Loading...</p>
+            </div>
+            <div id="repo-stats">
+                <div id="stars">⭐ <span>0</span></div>
+                <div id="forks">🔱 <span>0</span></div>
+                <div id="watchers">👁️ <span>0</span></div>
+            </div>
+            <div id="repo-info">
+                <div id="language-stats">Loading language data...</div>
+                <div id="last-update">Last updated: Loading...</div>
+            </div>
+
+            <div id="file-browser">
+                <div id="file-list" class="markdown-body">Loading files...</div>
+                <div id="file-viewer" class="markdown-body">Select a file to view</div>
+            </div>
+
+            <div id="readme-content" class="markdown-body">
+                Loading README...
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Minimal marked configuration
+        marked.setOptions({ breaks: true, gfm: true });
+
+        function escapeHtml(s) {
+            return s.replace(/[&<>'\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+        }
+
+        // Use the Pryzma programming-language repo
+        const GITHUB_REPO = 'IgorCielniak/Pryzma-programming-language';
+
+        async function fetchRepoData() {
+            try {
+                const repoData = await (await fetch(`https://api.github.com/repos/${GITHUB_REPO}`)).json();
+
+                document.getElementById('repo-title').textContent = repoData.name;
+                document.getElementById('repo-description').textContent = repoData.description;
+                document.querySelector('#stars span').textContent = repoData.stargazers_count;
+                document.querySelector('#forks span').textContent = repoData.forks_count;
+                document.querySelector('#watchers span').textContent = repoData.watchers_count;
+                document.getElementById('last-update').textContent = 'Last updated: ' + new Date(repoData.updated_at).toLocaleDateString();
+
+                const languages = Object.keys(await (await fetch(repoData.languages_url)).json()).join(', ');
+                document.getElementById('language-stats').textContent = `Languages: ${languages}`;
+
+                // README
+                const readmeData = await (await fetch(`https://api.github.com/repos/${GITHUB_REPO}/readme`)).json();
+                const readmeRaw = atob(readmeData.content);
+                const cleanedReadme = readmeRaw.replace(/[^\n\x20-\x7E]/g, '');
+                document.getElementById('readme-content').innerHTML = marked.parse(cleanedReadme);
+
+                // file browser
+                fetchContents('');
+            } catch (e) {
+                console.error(e);
+                document.getElementById('repo-content').innerHTML = 'Error loading repository data.';
+            }
+        }
+
+        async function fetchContents(path) {
+            const listEl = document.getElementById('file-list');
+            listEl.innerHTML = 'Loading...';
+            try {
+                const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`.replace(/\/+$/,'');
+                const res = await fetch(apiUrl);
+                const items = await res.json();
+                if (!Array.isArray(items)) { listEl.textContent = 'No files.'; return; }
+
+                const bc = document.createElement('div'); bc.className = 'breadcrumb';
+                const rootBtn = document.createElement('button'); rootBtn.className='file-btn'; rootBtn.textContent = '/'; rootBtn.onclick = ()=> fetchContents('');
+                bc.appendChild(rootBtn);
+                if (path) {
+                    const parts = path.split('/').filter(Boolean);
+                    let cum = '';
+                    for (let i=0;i<parts.length;i++){
+                        cum = cum ? cum + '/' + parts[i] : parts[i];
+                        const seg = document.createElement('button'); seg.className='file-btn'; seg.textContent = parts[i];
+                        seg.onclick = (()=>{ const p = cum; return ()=> fetchContents(p); })();
+                        bc.appendChild(seg);
+                    }
+                    const upBtn = document.createElement('button'); upBtn.className='file-btn'; upBtn.textContent='..';
+                    upBtn.onclick = ()=> {
+                        const parent = parts.slice(0,-1).join('/');
+                        fetchContents(parent);
+                    };
+                    bc.insertBefore(upBtn, bc.firstChild);
+                }
+
+                listEl.innerHTML = '';
+                listEl.appendChild(bc);
+
+                const ul = document.createElement('ul'); ul.className = 'file-list-ul';
+                items.sort((a,b)=> (a.type===b.type? a.name.localeCompare(b.name) : (a.type==='dir'? -1:1)));
+                for (const it of items) {
+                    const li = document.createElement('li'); li.className='file-item';
+                    const btn = document.createElement('button'); btn.className='file-btn';
+                    btn.textContent = it.name + (it.type==='dir'? '/':'');
+                    btn.onclick = ()=> it.type==='dir' ? fetchContents(it.path) : viewFile(it.path, it.name);
+                    li.appendChild(btn);
+                    ul.appendChild(li);
+                }
+                listEl.appendChild(ul);
+            } catch (e) {
+                console.error(e);
+                listEl.textContent = 'Error loading files.';
+            }
+        }
+
+        async function viewFile(path, name) {
+            const viewer = document.getElementById('file-viewer');
+            viewer.innerHTML = 'Loading...';
+            try {
+                const data = await (await fetch(`https://api.github.com/repos/${GITHUB_REPO}/contents/${path}`)).json();
+                if (data.content) {
+                    const raw = atob(data.content.replace(/\n/g,''));
+                    const cleaned = raw.replace(/[^\n\x20-\x7E]/g,'');
+                    if (name.toLowerCase().endsWith('.md')) {
+                        viewer.innerHTML = marked.parse(cleaned);
+                    } else if (name.match(/\.(png|jpg|jpeg|gif|svg)$/i)) {
+                        viewer.innerHTML = `<img src="data:;base64,${data.content}" style="max-width:100%;">`;
+                    } else {
+                        viewer.innerHTML = '<pre><code>' + escapeHtml(cleaned) + '</code></pre>';
+                    }
+                } else {
+                    viewer.textContent = 'Unable to load file.';
+                }
+            } catch (e) {
+                console.error(e);
+                viewer.textContent = 'Error loading file.';
+            }
+        }
+
+        fetchRepoData();
+    </script>
+</body>
+</html>

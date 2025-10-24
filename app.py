@@ -10,6 +10,9 @@ def index():
 def pryzma_repo():
     return render_template('repos/pryzma/pryzma.html')
 
+@app.route('/repos/pryzma-programming-language')
+def pryzma_programming_language_repo():
+    return render_template('repos/pryzma-programming-language/pryzma-programming-language.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
