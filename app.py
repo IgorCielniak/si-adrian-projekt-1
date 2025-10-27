@@ -1,10 +1,15 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, request
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/search')
+def search():
+    query = request.args.get('q', '')
+    return redirect(f'https://github.com/search?q={query}')
 
 @app.route('/repos/pryzma')
 def pryzma_repo():
