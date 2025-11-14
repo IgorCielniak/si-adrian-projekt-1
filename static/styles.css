@@ -59,6 +59,8 @@ main {
   border-radius: 20px;
   cursor: pointer;
   font-size: 20px;
+  text-align: center;
+  text-decoration: none;
 }
 
 #home-button {
